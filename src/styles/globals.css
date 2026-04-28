@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-ink-950 text-mist-100 antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+}
+
+@layer utilities {
+  .soniva-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+  
+  .soniva-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .soniva-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .soniva-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  
+  .soniva-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .animate-in {
+    animation: slideIn 0.2s ease-out;
+  }
+
+  .slide-in-from-right {
+    animation: slideInFromRight 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInFromRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(circle at top, rgba(139, 92, 246, 0.16), transparent 24%),
+    radial-gradient(circle at 80% 0%, rgba(96, 165, 250, 0.08), transparent 18%),
+    #060816;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(167, 139, 250, 0.35);
+}
+
+.soniva-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.soniva-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(145, 165, 195, 0.28);
+  border-radius: 999px;
+  border: 2px solid rgba(6, 8, 22, 0.7);
+}
+
+.soniva-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel {
+  @apply rounded-3xl border border-white/10 bg-white/[0.03] shadow-panel backdrop-blur-xl;
+}
+
+.panel-muted {
+  @apply rounded-3xl border border-white/10 bg-white/[0.02] shadow-soft backdrop-blur-md;
+}
+
+.subtle-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), transparent 80%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #f7f8fc 0%, #b7c5dd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
