@@ -1,193 +1,492 @@
-# Soniva
-
 <div align="center">
+  <img src="./icon.png" alt="Soniva Logo" width="120" height="120" />
 
-![Soniva](https://img.shields.io/badge/Soniva-0.1.0-8b5cf6?style=for-the-badge)
-![Tauri](https://img.shields.io/badge/Tauri-2.0-24c8db?style=for-the-badge&logo=tauri)
-![React](https://img.shields.io/badge/React-18-61dafb?style=for-the-badge&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178c6?style=for-the-badge&logo=typescript)
-![Rust](https://img.shields.io/badge/Rust-1.94-ce422b?style=for-the-badge&logo=rust)
+  <h1>Soniva</h1>
 
-**A desktop-first, local-first application for authorized media ingestion, metadata preservation, and searchable library management.**
+  <p><strong>Aplicativo desktop local-first para ingestão autorizada de mídia, preservação de metadados e gerenciamento de biblioteca pesquisável</strong></p>
+  <p><strong>Local-first desktop app for authorized media ingestion, metadata preservation and searchable library management</strong></p>
 
-[Features](#features) • [Quick Start](#quick-start) • [Architecture](#architecture) • [Documentation](#documentation)
+  <p>
+    <a href="#pt-br">PT-BR</a> •
+    <a href="#en">English</a> •
+    <a href="#stack--tecnologias">Stack</a> •
+    <a href="#quick-start--início-rápido">Quick Start</a> •
+    <a href="#arquitetura--architecture">Arquitetura</a> •
+    <a href="#autor--author">Autor</a>
+  </p>
 
+  <p>
+    <img src="https://img.shields.io/badge/Soniva-0.1.0-8b5cf6.svg?style=for-the-badge" alt="Soniva 0.1.0" />
+    <img src="https://img.shields.io/badge/Tauri-2.0-24c8db.svg?style=for-the-badge&logo=tauri" alt="Tauri 2.0" />
+    <img src="https://img.shields.io/badge/React-18-61dafb.svg?style=for-the-badge&logo=react" alt="React 18" />
+    <img src="https://img.shields.io/badge/TypeScript-5.7-3178c6.svg?style=for-the-badge&logo=typescript" alt="TypeScript 5.7" />
+    <img src="https://img.shields.io/badge/Rust-1.94-ce422b.svg?style=for-the-badge&logo=rust" alt="Rust 1.94" />
+    <img src="https://img.shields.io/badge/SQLite-local--first-003B57.svg?style=for-the-badge&logo=sqlite" alt="SQLite Local First" />
+  </p>
 </div>
 
 ---
 
-## 🎯 What is Soniva?
+<a id="pt-br"></a>
 
-Soniva is a **polished desktop application** for managing authorized media with complete local control. It combines the power of `yt-dlp` and `ffmpeg` with an elegant React interface to provide:
+## 🇧🇷 PT-BR
 
-- **Authorized URL ingestion** - Download media from permitted sources with full metadata preservation
-- **Local file ingestion** - Import existing media files into your managed library
-- **Audio extraction** - Automatic MP3 extraction with configurable quality
-- **Metadata preservation** - Complete metadata capture and searchable catalog
-- **Overwrite policies** - Smart duplicate handling (skip or replace)
-- **Job tracking** - Persistent execution history with detailed logs
-- **Local-first** - All data stored locally in SQLite, no cloud dependencies
+## 🎯 Visão geral
 
-## ✨ Features
+**Soniva** é um aplicativo desktop polido, **local-first**, criado para ingestão autorizada de mídia, preservação de metadados e gerenciamento de uma biblioteca pesquisável.
 
-### 🎬 Dual Ingestion Modes
+Ele combina uma interface moderna em React com a camada nativa do Tauri/Rust, armazenamento local em SQLite e integração com ferramentas externas como `ffmpeg` e `yt-dlp`, sempre com foco em **conteúdo permitido/autorizado**.
 
-**URL Ingestion:**
-- Probe metadata with yt-dlp
-- Download source media
-- Extract thumbnails
-- Generate MP3 audio
-- Preserve all metadata in JSON sidecars
+A proposta é oferecer controle total sobre arquivos, metadados, histórico de jobs e organização da biblioteca — sem depender de nuvem, telemetria ou backend externo.
 
-**Local File Ingestion:**
-- Copy files into managed library
-- Extract audio without requiring yt-dlp
-- Catalog local media collections
+> **Objetivo:** transformar ingestão autorizada de mídia em um fluxo local, organizado, auditável e visualmente elegante.
 
-### 🎨 Rich User Experience
+---
 
-**Visual Media Preview:**
-- Thumbnail preview in library inspector
-- Built-in audio player for extracted MP3s
-- Inline media playback without leaving the app
+## ✅ Para que o Soniva serve
 
-**Smart Notifications:**
-- Toast notifications for all actions
-- Success/error feedback with auto-dismiss
-- Non-intrusive status updates
+O Soniva foi pensado para:
 
-**File System Integration:**
-- "Open in File Manager" buttons
-- Quick access to library directories
-- Direct navigation to job outputs
+- criadores de conteúdo organizando mídia própria ou licenciada;
+- profissionais que trabalham com fontes permitidas;
+- arquivistas pessoais que valorizam controle local;
+- usuários que desejam preservar metadados e histórico de processamento;
+- fluxos em que a mídia precisa ser importada, catalogada, convertida e encontrada com facilidade.
 
-### 📊 Library Management
+## ❌ Para que o Soniva não serve
 
-**Search & Filter:**
-- Full-text search across titles and metadata
-- Filter by status (all/ready/failed)
-- Real-time query updates
+O Soniva **não** foi criado para:
 
-**Detail Inspector:**
-- Complete metadata JSON viewer
-- File paths and sizes
-- Duration and format information
-- Thumbnail and audio asset preview
+- downloads não autorizados;
+- burla de copyright;
+- scraping massivo de mídia;
+- contornar restrições de plataformas;
+- redistribuição indevida de conteúdo.
 
-### 🔄 Job Tracking
+A experiência do aplicativo reforça o uso autorizado, inclusive com confirmação explícita antes da ingestão.
 
-**Persistent History:**
-- All jobs saved to SQLite
-- Detailed progress tracking
-- Stage-by-stage execution logs
-- Error messages with context
+---
 
-**Smart Overwrite:**
-- Skip: Reuse existing items
-- Replace: Fresh run with cleanup of old artifacts
+## ✨ Funcionalidades principais
 
-### 🎯 Local-First Architecture
+### 🎬 Dois modos de ingestão
 
-- SQLite database in app data directory
-- No cloud dependencies
-- Complete offline functionality
-- Full data ownership
+#### Ingestão por URL autorizada
 
-## 🚀 Quick Start
+- Consulta de metadados com `yt-dlp`.
+- Download de mídia de fontes permitidas.
+- Extração de thumbnails.
+- Geração de áudio MP3.
+- Preservação completa de metadados em sidecars JSON.
+- Histórico de execução com logs.
 
-### Prerequisites
+#### Ingestão de arquivo local
 
-- **Node.js** 18+ and npm
-- **Rust** stable toolchain
-- **Cargo** (comes with Rust)
-- **ffmpeg** (required for all ingestion)
-- **yt-dlp** (required for URL ingestion only)
+- Importação de arquivos existentes.
+- Cópia para uma biblioteca gerenciada.
+- Extração de áudio com `ffmpeg`.
+- Catalogação de coleções locais.
+- Funcionamento sem `yt-dlp`.
 
-### Installation
+---
+
+### 🎨 Experiência desktop premium
+
+- Interface dark moderna com sistema visual próprio.
+- Preview de thumbnails no inspetor da biblioteca.
+- Player de áudio integrado para MP3 extraído.
+- Atualizações de progresso em tempo real.
+- Toast notifications para feedback não intrusivo.
+- Empty states orientativos para o primeiro uso.
+- Botões de “abrir no gerenciador de arquivos”.
+- Navegação rápida para diretórios e outputs de jobs.
+
+---
+
+### 📚 Gerenciamento de biblioteca
+
+- Busca textual por títulos e metadados.
+- Filtros por status: todos, prontos e com falha.
+- Atualização em tempo real.
+- Inspetor com metadados completos em JSON.
+- Caminhos de arquivos, tamanhos, duração e formato.
+- Preview de thumbnail e assets de áudio.
+
+---
+
+### 🔄 Histórico e jobs
+
+- Jobs persistidos em SQLite.
+- Progresso por etapa.
+- Logs detalhados de execução.
+- Mensagens de erro com contexto.
+- Status visuais para queued, processing, completed e failed.
+- Políticas inteligentes de sobrescrita:
+  - **skip:** reutiliza itens existentes;
+  - **replace:** executa novamente e limpa artefatos antigos.
+
+---
+
+### ⚙️ Configuração inteligente
+
+- Detecção automática de `ffmpeg` e `yt-dlp` no PATH.
+- Possibilidade de informar caminhos explícitos dos binários.
+- Escolha de diretório raiz da biblioteca.
+- Política de sobrescrita configurável.
+- Estrutura previsível de arquivos com slugs e IDs curtos.
+
+---
+
+## 🔒 Segurança, privacidade e controle local
+
+- Dados armazenados localmente na máquina do usuário.
+- Sem dependência de nuvem.
+- Sem telemetria.
+- Sem analytics.
+- Código transparente.
+- Ingestão condicionada à confirmação de autorização.
+- Biblioteca organizada em diretório local escolhido pelo usuário.
+
+---
+
+<a id="en"></a>
+
+## 🇺🇸 English
+
+## 🎯 Overview
+
+**Soniva** is a polished, **local-first** desktop application for authorized media ingestion, metadata preservation and searchable library management.
+
+It combines a modern React interface with a native Tauri/Rust layer, local SQLite storage and integrations with external tools such as `ffmpeg` and `yt-dlp`, always focused on **permitted/authorized content**.
+
+The goal is to provide full control over files, metadata, job history and library organization — without relying on cloud infrastructure, telemetry or external backends.
+
+> **Goal:** turn authorized media ingestion into a local, organized, auditable and visually polished workflow.
+
+---
+
+## ✅ What Soniva is for
+
+Soniva is designed for:
+
+- content creators managing owned or licensed media;
+- professionals working with permitted sources;
+- personal archivists who value local control;
+- users who need to preserve metadata and processing history;
+- workflows where media must be imported, cataloged, converted and easily searchable.
+
+## ❌ What Soniva is not for
+
+Soniva is **not** intended for:
+
+- unauthorized downloads;
+- copyright circumvention;
+- mass media scraping;
+- bypassing platform restrictions;
+- improper redistribution of content.
+
+The application experience reinforces authorized usage, including explicit confirmation before ingestion.
+
+---
+
+## ✨ Key features
+
+### 🎬 Dual ingestion modes
+
+#### Authorized URL ingestion
+
+- Metadata probing with `yt-dlp`.
+- Media download from permitted sources.
+- Thumbnail extraction.
+- MP3 audio generation.
+- Complete metadata preservation through JSON sidecars.
+- Execution history with logs.
+
+#### Local file ingestion
+
+- Import existing media files.
+- Copy files into a managed library.
+- Extract audio with `ffmpeg`.
+- Catalog local media collections.
+- Works without `yt-dlp`.
+
+---
+
+### 🎨 Premium desktop experience
+
+- Modern dark interface with a custom visual system.
+- Thumbnail preview in the library inspector.
+- Built-in audio player for extracted MP3s.
+- Real-time progress updates.
+- Toast notifications for non-intrusive feedback.
+- Helpful empty states for first-time users.
+- “Open in file manager” actions.
+- Quick navigation to library directories and job outputs.
+
+---
+
+### 📚 Library management
+
+- Full-text search across titles and metadata.
+- Filters by status: all, ready and failed.
+- Real-time query updates.
+- Inspector with complete JSON metadata.
+- File paths, sizes, duration and format information.
+- Thumbnail and audio asset previews.
+
+---
+
+### 🔄 Jobs and history
+
+- Jobs persisted in SQLite.
+- Stage-by-stage progress.
+- Detailed execution logs.
+- Contextual error messages.
+- Visual statuses for queued, processing, completed and failed.
+- Smart overwrite policies:
+  - **skip:** reuse existing items;
+  - **replace:** run fresh and clean old artifacts.
+
+---
+
+### ⚙️ Smart configuration
+
+- Auto-detection of `ffmpeg` and `yt-dlp` from PATH.
+- Optional explicit binary paths.
+- Configurable library root directory.
+- Configurable overwrite policy.
+- Predictable file organization with slugs and short IDs.
+
+---
+
+## 🔒 Security, privacy and local control
+
+- Data stored locally on the user's machine.
+- No cloud dependency.
+- No telemetry.
+- No analytics.
+- Transparent source code.
+- Ingestion requires explicit authorization confirmation.
+- Library organized inside a user-selected local directory.
+
+---
+
+<a id="stack--tecnologias"></a>
+
+## 🛠️ Stack / Tecnologias
+
+### Frontend
+
+- **React 18**
+- **TypeScript 5.7**
+- **Vite 6**
+- **Tailwind CSS 3.4**
+- Custom hooks for polling, toast and Tauri bridge
+
+### Desktop / Native layer
+
+- **Tauri 2.0**
+- **Rust 1.94**
+- Native command handlers
+- External process orchestration
+- Filesystem management
+
+### Persistence
+
+- **SQLite**
+- **Drizzle ORM**
+- Local app data directory
+- Foreign keys and indexed metadata
+
+### External tools
+
+- **ffmpeg** — audio extraction
+- **yt-dlp** — metadata probe and URL ingestion for authorized sources
+
+---
+
+<a id="arquitetura--architecture"></a>
+
+## 🏗️ Arquitetura / Architecture
+
+```txt
+User Action
+   ↓
+React UI
+   ↓
+Tauri Command
+   ↓
+Rust Handler
+   ↓
+SQLite + Filesystem
+   ↓
+External Process
+   ├── yt-dlp
+   └── ffmpeg
+```
+
+### Data flow
+
+```txt
+User Action → React UI → Tauri Command → Rust Handler → SQLite
+                                      ↓
+                              External Process
+                                      ↓
+                              Filesystem library_root
+```
+
+### Estrutura da biblioteca / Library structure
+
+```txt
+library_root/
+└── items/
+    └── <slug>--<short-id>/
+        ├── source/
+        │   └── source.<ext>
+        ├── audio/
+        │   └── track.mp3
+        ├── thumbnails/
+        │   └── <thumbnail>.jpg
+        └── source-metadata.json
+```
+
+### Schema resumido / Database schema
+
+```txt
+app_settings             # Configuration key-value store
+media_sources            # Source URLs or local file paths
+media_items              # Cataloged media with metadata
+extracted_audio_assets   # Generated MP3 files
+thumbnails               # Downloaded or extracted thumbnail images
+ingestion_jobs           # Execution history and logs
+```
+
+---
+
+## 📁 Estrutura do projeto / Project structure
+
+```txt
+soniva/
+├── src/                         # React frontend
+│   ├── components/              # UI components
+│   ├── pages/                   # Overview, Ingest, Library, Jobs, Settings
+│   ├── lib/                     # Utilities, Tauri bridge, Drizzle client
+│   └── hooks/                   # Polling, toast and UI hooks
+├── src-tauri/                   # Rust backend
+│   └── src/
+│       ├── main.rs              # Tauri commands
+│       ├── pipeline.rs          # Ingestion pipeline
+│       ├── db.rs                # SQLite operations
+│       └── models.rs            # Rust types
+├── drizzle/                     # SQL migrations
+├── docs/                        # Architecture, runbook and portfolio notes
+├── README.md
+└── package.json
+```
+
+---
+
+<a id="quick-start--início-rápido"></a>
+
+## 🚀 Quick Start / Início rápido
+
+### Pré-requisitos / Prerequisites
+
+Required:
+
+- Node.js 18+
+- npm
+- Rust stable toolchain
+- Cargo
+- Tauri prerequisites for your operating system
+- `ffmpeg` for audio extraction
+
+Optional:
+
+- `yt-dlp` for authorized URL ingestion
+
+---
+
+### Instalação / Installation
 
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/soniva.git
+
+# Enter the project
 cd soniva
 
 # Install dependencies
 npm install
+```
 
-# Run in development mode
+On Windows, you may also run the setup script:
+
+```powershell
+.\setup.ps1
+```
+
+The setup script validates:
+
+- Node.js and npm
+- Rust and Cargo
+- Tauri prerequisites
+- `ffmpeg`
+- `yt-dlp`
+- WebView2 on Windows
+
+---
+
+### Rodar em desenvolvimento / Run in development
+
+```bash
 npm run tauri:dev
 ```
 
-### First Run Setup
+### Build de produção / Production build
 
-1. Launch Soniva
-2. Navigate to **Settings**
-3. Choose a **Library Root** directory
-4. Verify **ffmpeg** detection (or provide explicit path)
-5. Verify **yt-dlp** detection (or provide explicit path for URL ingestion)
-6. Select **Overwrite Policy** (skip or replace)
-7. Click **Save Settings**
-
-### Your First Ingestion
-
-**For URL:**
-1. Go to **Authorized Ingest**
-2. Select "Authorized URL" mode
-3. Paste a permitted URL
-4. Check "I confirm this is authorized content"
-5. Click **Queue Job**
-
-**For Local File:**
-1. Go to **Authorized Ingest**
-2. Select "Local media file" mode
-3. Click **Browse** and choose a file
-4. Check authorization
-5. Click **Queue Job**
-
-## 🏗️ Architecture
-
-### Stack
-
-- **Frontend:** React 18 + TypeScript 5.7 + Tailwind CSS 3.4
-- **Desktop Shell:** Tauri 2.0
-- **Backend:** Rust (edition 2021)
-- **Database:** SQLite with Drizzle ORM
-- **External Tools:** yt-dlp, ffmpeg
-
-### Data Flow
-
-```
-User Action → React UI → Tauri Command → Rust Handler → SQLite
-                                      ↓
-                              External Process (yt-dlp/ffmpeg)
-                                      ↓
-                              Filesystem (library_root)
+```bash
+npm run tauri:build
 ```
 
-### Library Structure
+---
 
-```
-library_root/
-  items/
-    <slug>--<short-id>/
-      source/
-        source.<ext>
-      audio/
-        track.mp3
-      thumbnails/
-        <thumbnail>.jpg
-      source-metadata.json
-```
+## 🧭 First-time setup / Configuração inicial
 
-## 📚 Documentation
+1. Launch Soniva.
+2. Open **Settings**.
+3. Choose a **Library Root** directory.
+4. Verify `ffmpeg` detection or provide an explicit path.
+5. Verify `yt-dlp` detection or provide an explicit path for authorized URL ingestion.
+6. Select overwrite policy: **skip** or **replace**.
+7. Save settings.
+8. Go to **Authorized Ingest** and queue your first job.
 
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Technical architecture and design decisions
-- [RUNBOOK.md](docs/RUNBOOK.md) - Step-by-step operational guide
-- [PORTFOLIO_NOTES.md](docs/PORTFOLIO_NOTES.md) - Positioning for portfolio/interviews
-- [DELIVERY_REPORT.md](docs/DELIVERY_REPORT.md) - Implementation summary
+---
 
-## 🛠️ Development
+## 🎬 First ingestion / Primeira ingestão
 
-### Available Scripts
+### Authorized URL
+
+1. Open **Authorized Ingest**.
+2. Select **Authorized URL** mode.
+3. Paste a permitted URL.
+4. Confirm that the content is authorized.
+5. Click **Queue Job**.
+
+### Local media file
+
+1. Open **Authorized Ingest**.
+2. Select **Local media file** mode.
+3. Browse and choose a file.
+4. Confirm that the content is authorized.
+5. Click **Queue Job**.
+
+---
+
+## 🛠️ Development / Desenvolvimento
+
+### Available scripts / Scripts disponíveis
 
 ```bash
 npm run dev          # Start Vite dev server
@@ -196,267 +495,116 @@ npm run typecheck    # Run TypeScript type checking
 npm run tauri:dev    # Run Tauri in development mode
 npm run tauri:build  # Build production executable
 npm run db:generate  # Generate Drizzle migrations
-npm run db:studio    # Open Drizzle Studio (requires SONIVA_DB_PATH)
+npm run db:studio    # Open Drizzle Studio
 ```
 
-### Type Safety
-
-All TypeScript code is strictly typed. Run `npm run typecheck` before committing.
-
-### Database Inspection
+### Database inspection / Inspeção do banco
 
 To inspect the runtime database with Drizzle Studio:
 
-```bash
-# First, run the app and note the database path shown in Settings
-# Then set the environment variable and run studio
+```powershell
 $env:SONIVA_DB_PATH="C:\Users\YourUser\AppData\Roaming\com.soniva.app\soniva.sqlite"
 npm run db:studio
 ```
 
+---
+
 ## 🎨 Design System
 
-Soniva uses a custom Tailwind theme with:
+Soniva uses a custom Tailwind theme:
 
-- **ink** - Deep background tones (950-700)
-- **mist** - Foreground and text (50-500)
-- **accent** - Primary actions (purple, 300-500)
-- **mint** - Success states (400)
-- **amber** - Warning states (400)
-- **rose** - Error states (400)
+- **ink** — deep background tones
+- **mist** — foreground and text
+- **accent** — primary purple actions
+- **mint** — success states
+- **amber** — warning states
+- **rose** — error states
 
-## 🤝 Contributing
-
-This is a portfolio project demonstrating:
-- Desktop application development with Tauri
-- Local-first architecture
-- Process orchestration and filesystem management
-- Type-safe full-stack TypeScript/Rust integration
-- Polished UI/UX with modern design patterns
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details
-
-## 🙏 Acknowledgments
-
-- Built with [Tauri](https://tauri.app/)
-- Powered by [yt-dlp](https://github.com/yt-dlp/yt-dlp) and [ffmpeg](https://ffmpeg.org/)
-- UI components inspired by modern design systems
+The visual direction is premium, dark, focused and desktop-first.
 
 ---
 
-<div align="center">
+## 📚 Documentation / Documentação
 
-**Soniva** - Authorized media ingestion, locally.
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) — technical architecture and design decisions
+- [RUNBOOK.md](docs/RUNBOOK.md) — step-by-step operational guide
+- [PORTFOLIO_NOTES.md](docs/PORTFOLIO_NOTES.md) — professional positioning for portfolio/interviews
+- [DELIVERY_REPORT.md](docs/DELIVERY_REPORT.md) — implementation summary
 
-Made with ❤️ for local-first workflows
+---
 
-</div>brary
-- Extract audio with ffmpeg
-- Catalog with searchable metadata
-- No yt-dlp required
-
-### 🎨 Elegant Desktop UI
-
-- **Modern design system** - Dark theme with custom Tailwind palette
-- **Real-time updates** - Live job progress and library refresh
-- **Detailed inspection** - Full metadata and file path visibility
-- **Toast notifications** - Non-intrusive feedback for all actions
-- **Empty states** - Helpful guidance when getting started
-
-### 🔧 Smart Configuration
-
-- **Binary detection** - Auto-detect yt-dlp and ffmpeg from PATH
-- **Flexible paths** - Override with explicit binary locations
-- **Overwrite policies** - Choose between skip (reuse) or replace (refresh)
-- **Library organization** - Predictable directory structure with slugs
-
-### 📊 Job Management
-
-- **Persistent history** - All jobs saved to SQLite
-- **Progress tracking** - Stage-by-stage execution visibility
-- **Error handling** - Detailed error messages and log excerpts
-- **Status badges** - Visual indicators for queued/processing/completed/failed
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-**Required:**
-- [Node.js](https://nodejs.org/) (v18+)
-- [Rust](https://rustup.rs/) (stable toolchain)
-- [Tauri prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites) for your OS
-- [ffmpeg](https://ffmpeg.org/download.html) (for audio extraction)
-
-**Optional:**
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp) (for URL ingestion only)
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/soniva.git
-cd soniva
-
-# Run setup script (validates prerequisites and installs dependencies)
-# Windows:
-.\setup.ps1
-
-# Or manually:
-npm install
-```
-
-### Running the App
-
-```bash
-# Development mode
-npm run tauri:dev
-
-# Build for production
-npm run tauri:build
-```
-
-### First-Time Setup
-
-1. **Launch Soniva** - The app will open to the Overview page
-2. **Open Settings** - Click Settings in the sidebar
-3. **Configure library root** - Choose a directory for your managed library
-4. **Detect binaries** - Click "Detect" for yt-dlp and ffmpeg (or provide explicit paths)
-5. **Choose overwrite policy** - Select "skip" or "replace"
-6. **Save settings** - You're ready to ingest!
-
-## 🏗️ Architecture
-
-### Stack
-
-**Frontend:**
-- React 18 + TypeScript 5.7
-- Vite 6 (build tool)
-- Tailwind CSS 3.4 (styling)
-- Drizzle ORM (SQLite queries)
-
-**Backend:**
-- Tauri 2.0 (desktop shell)
-- Rust 1.94 (native layer)
-- SQLite (local persistence)
-
-**External Tools:**
-- yt-dlp (metadata probe & download)
-- ffmpeg (audio extraction)
-
-### Project Structure
-
-```
-soniva/
-├── src/                    # React frontend
-│   ├── components/         # UI components
-│   ├── pages/             # Main pages (Overview, Ingest, Library, Jobs, Settings)
-│   ├── lib/               # Utilities, Tauri bridge, Drizzle client
-│   └── hooks/             # React hooks (polling, toast)
-├── src-tauri/             # Rust backend
-│   └── src/
-│       ├── main.rs        # Tauri commands
-│       ├── pipeline.rs    # Ingestion pipeline (862 lines)
-│       ├── db.rs          # SQLite operations
-│       └── models.rs      # Rust types
-├── drizzle/               # SQL migrations
-└── docs/                  # Architecture, runbook, portfolio notes
-```
-
-### Database Schema
-
-5 tables with foreign keys:
-- `app_settings` - Configuration key-value store
-- `media_sources` - Source URLs or file paths
-- `media_items` - Cataloged media with metadata
-- `extracted_audio_assets` - Generated MP3 files
-- `thumbnails` - Downloaded thumbnail images
-- `ingestion_jobs` - Execution history with logs
-
-## 📖 Documentation
-
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Detailed architecture and design decisions
-- **[RUNBOOK.md](docs/RUNBOOK.md)** - Step-by-step execution guide
-- **[PORTFOLIO_NOTES.md](docs/PORTFOLIO_NOTES.md)** - Professional framing for interviews
-
-## 🎓 Why Soniva?
+## 🎓 Why Soniva? / Por que Soniva?
 
 Soniva demonstrates:
 
-✅ **Product discipline** - Clear scope, no feature creep  
-✅ **Desktop systems integration** - Real process execution, filesystem management  
-✅ **Elegant UX** - Polished interface with attention to detail  
-✅ **Local-first architecture** - SQLite, no backend infrastructure  
-✅ **Professional code quality** - Clean separation, consistent naming, proper error handling  
-✅ **Metadata modeling** - Structured data with foreign keys and indexes  
+- desktop application development with Tauri;
+- local-first architecture;
+- real process orchestration;
+- filesystem management;
+- type-safe TypeScript/Rust integration;
+- metadata modeling with relational structure;
+- polished UI/UX with modern desktop patterns;
+- disciplined product scope.
 
-## 🛠️ Development
+---
 
-### Available Scripts
+## 🗺️ Roadmap
 
-```bash
-npm run dev          # Start Vite dev server
-npm run build        # Build frontend (TypeScript + Vite)
-npm run typecheck    # Validate TypeScript
-npm run tauri:dev    # Run Tauri in development mode
-npm run tauri:build  # Build production executable
-npm run db:studio    # Open Drizzle Studio (requires SONIVA_DB_PATH)
-```
+Current:
 
-### Validation Script
+- MVP with core ingestion, library management and job tracking.
 
-Run `.\setup.ps1` (Windows) to validate all prerequisites:
-- Node.js, npm, Rust, Cargo
-- yt-dlp, ffmpeg
-- WebView2 (Windows)
+Future considerations:
 
-## 🔒 Security & Privacy
+- Batch ingestion.
+- Advanced search and filters.
+- Export and backup utilities.
+- Keyboard shortcuts.
+- Drag and drop support.
+- Deeper audio player integration.
+- Better media preview options.
+- More robust ingestion validation.
 
-- **Local-first** - All data stored on your machine
-- **No telemetry** - No tracking or analytics
-- **Authorized only** - Explicit checkbox required for all ingestion
-- **Transparent** - Full source code visibility
+---
 
-## 📝 License
+<a id="autor--author"></a>
 
-MIT License - see [LICENSE](LICENSE) for details
+## 👤 Autor / Author
 
-## 🤝 Contributing
+Developed by **BarujaFe1**.
 
-This is a portfolio project, but suggestions and feedback are welcome! Please open an issue to discuss proposed changes.
+- **Portfolio:** [https://barujafe.vercel.app/](https://barujafe.vercel.app/)
+- **GitHub:** [github.com/BarujaFe1](https://github.com/BarujaFe1/)
+- **LinkedIn:** [linkedin.com/in/barujafe](https://www.linkedin.com/in/barujafe/)
 
-## 💡 Positioning
+---
 
-Soniva is designed for:
-- Content creators managing authorized media
-- Personal archivists organizing licensed content
-- Professionals working with permitted sources
-- Anyone who values local control over their media library
+## 🤝 Contributing / Contribuição
 
-**Not intended for:**
-- Unauthorized downloads
-- Copyright circumvention
-- Mass media scraping
+This is a portfolio project, but suggestions and feedback are welcome.
 
-## 🎯 Roadmap
+Please open an issue before proposing larger changes.
 
-**Current:** MVP with core ingestion, library, and job tracking
+---
 
-**Future considerations:**
-- Batch ingestion
-- Advanced search and filters
-- Export/backup utilities
-- Keyboard shortcuts
-- Drag & drop support
-- Audio player integration
+## 📄 License / Licença
+
+MIT License.
+
+See [LICENSE](LICENSE) for details.
+
+---
+
+## 🙏 Acknowledgments / Agradecimentos
+
+- Built with [Tauri](https://tauri.app/)
+- Powered by [yt-dlp](https://github.com/yt-dlp/yt-dlp) and [ffmpeg](https://ffmpeg.org/)
+- Built with [React](https://react.dev/) and [Rust](https://www.rust-lang.org/)
 
 ---
 
 <div align="center">
-
-**Built with** [Tauri](https://tauri.app/) • [React](https://react.dev/) • [Rust](https://www.rust-lang.org/)
-
-Made with ❤️ for local-first media management
-
+  <p><strong>Soniva</strong></p>
+  <p>Authorized media ingestion, locally.</p>
+  <p><em>Ingestão autorizada de mídia, com controle local.</em></p>
 </div>
