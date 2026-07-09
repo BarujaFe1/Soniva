@@ -50,7 +50,7 @@ export function formatDuration(value?: number | null) {
 export function formatDateTime(value?: string | null) {
   if (!value) return "—";
   const date = new Date(value);
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "medium",
     timeStyle: "short"
   }).format(date);
@@ -60,7 +60,7 @@ export function relativeTime(value?: string | null) {
   if (!value) return "—";
   const date = new Date(value).getTime();
   const diffMinutes = Math.round((date - Date.now()) / 60_000);
-  const formatter = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+  const formatter = new Intl.RelativeTimeFormat("pt-BR", { numeric: "auto" });
   const hours = Math.round(diffMinutes / 60);
   const days = Math.round(hours / 24);
   if (Math.abs(diffMinutes) < 60) return formatter.format(diffMinutes, "minute");
@@ -69,7 +69,7 @@ export function relativeTime(value?: string | null) {
 }
 
 export function prettyJson(input?: string | null) {
-  if (!input) return "No structured metadata stored yet.";
+  if (!input) return "Nenhum metadado estruturado armazenado ainda.";
   try {
     return JSON.stringify(JSON.parse(input), null, 2);
   } catch {

@@ -30,15 +30,15 @@ export function JobsPage({ jobs, onRefresh, onPageChange }: { jobs: IngestionJob
       <Card className="space-y-5">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm text-mist-400">Persistent history</p>
-            <h3 className="text-2xl font-semibold text-mist-50">Ingestion jobs</h3>
+            <p className="text-sm text-mist-400">Histórico persistente</p>
+            <h3 className="text-2xl font-semibold text-mist-50">Jobs de ingestão</h3>
           </div>
-          <Button variant="secondary" onClick={() => void onRefresh()}><RefreshCcw className="h-4 w-4" />Refresh</Button>
+          <Button variant="secondary" onClick={() => void onRefresh()}><RefreshCcw className="h-4 w-4" />Atualizar</Button>
         </div>
         {jobs.length === 0 ? (
-          <EmptyState eyebrow="No jobs" title="There is no execution history yet." description="Once a job is created, this view will show stage transitions, progress, errors, and any linked media item.">
+          <EmptyState eyebrow="Sem jobs" title="Ainda não há histórico de execução." description="Quando um job for criado, esta view mostrará etapas, progresso, erros e o item de mídia vinculado.">
             <Button onClick={() => onPageChange("ingest")}>
-              Create First Job
+              Criar primeiro job
             </Button>
           </EmptyState>
         ) : (
@@ -51,14 +51,14 @@ export function JobsPage({ jobs, onRefresh, onPageChange }: { jobs: IngestionJob
                       <p className="font-medium text-mist-100">{job.inputValue}</p>
                       <Badge tone={job.status === "completed" ? "success" : job.status === "failed" ? "danger" : "accent"}>{job.status}</Badge>
                     </div>
-                    <p className="text-sm text-mist-400">{job.sourceKind === "url" ? "URL source" : "Local source"} · {formatDateTime(job.createdAt)}</p>
+                    <p className="text-sm text-mist-400">{job.sourceKind === "url" ? "Origem URL" : "Origem local"} · {formatDateTime(job.createdAt)}</p>
                   </div>
                   <span className="text-xs text-mist-500">{job.id}</span>
                 </div>
                 <div className="mt-3"><ProgressBar value={job.progress} /></div>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-mist-300">
-                  <span>Stage: {job.stage}</span>
-                  <span>{loadingId === job.id ? "Loading details…" : formatDateTime(job.updatedAt)}</span>
+                  <span>Etapa: {job.stage}</span>
+                  <span>{loadingId === job.id ? "Carregando detalhes…" : formatDateTime(job.updatedAt)}</span>
                 </div>
               </button>
             ))}
@@ -70,8 +70,8 @@ export function JobsPage({ jobs, onRefresh, onPageChange }: { jobs: IngestionJob
         <Card className="space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-mist-400">Selected detail</p>
-              <h3 className="text-xl font-semibold text-mist-50">Job inspection</h3>
+              <p className="text-sm text-mist-400">Detalhe selecionado</p>
+              <h3 className="text-xl font-semibold text-mist-50">Inspeção do job</h3>
             </div>
             {selected?.job.outputDirectory && (
               <Button 
@@ -79,19 +79,19 @@ export function JobsPage({ jobs, onRefresh, onPageChange }: { jobs: IngestionJob
                 onClick={async () => {
                   try {
                     await openInFileManager(selected.job.outputDirectory!);
-                    showToast("success", "Opened folder in file manager");
+                    showToast("success", "Pasta aberta no gerenciador (demo web: ver console)");
                   } catch (error) {
-                    showToast("error", error instanceof Error ? error.message : "Failed to open folder");
+                    showToast("error", error instanceof Error ? error.message : "Falha ao abrir pasta");
                   }
                 }}
               >
                 <FolderOpen className="h-4 w-4" />
-                Open Folder
+                Abrir pasta
               </Button>
             )}
           </div>
           {!selected ? (
-            <EmptyState eyebrow="Nothing selected" title="Choose a job to inspect the full detail payload." description="This panel shows output paths, linked media, error state, and the structured metadata saved for the related library item." />
+            <EmptyState eyebrow="Nada selecionado" title="Escolha um job para inspecionar o payload completo." description="Este painel mostra caminhos de saída, mídia vinculada, estado de erro e metadados estruturados do item relacionado." />
           ) : (
             <div className="space-y-4">
               <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-4">
@@ -100,33 +100,33 @@ export function JobsPage({ jobs, onRefresh, onPageChange }: { jobs: IngestionJob
                   <Badge tone={selected.job.status === "completed" ? "success" : selected.job.status === "failed" ? "danger" : "accent"}>{selected.job.status}</Badge>
                 </div>
                 <dl className="mt-4 space-y-2 text-sm text-mist-300">
-                  <div className="flex justify-between gap-4"><dt className="text-mist-400">Stage</dt><dd>{selected.job.stage}</dd></div>
-                  <div className="flex justify-between gap-4"><dt className="text-mist-400">Progress</dt><dd>{selected.job.progress}%</dd></div>
-                  <div className="flex justify-between gap-4"><dt className="text-mist-400">Output directory</dt><dd className="max-w-[18rem] break-all text-right">{selected.job.outputDirectory || "—"}</dd></div>
+                  <div className="flex justify-between gap-4"><dt className="text-mist-400">Etapa</dt><dd>{selected.job.stage}</dd></div>
+                  <div className="flex justify-between gap-4"><dt className="text-mist-400">Progresso</dt><dd>{selected.job.progress}%</dd></div>
+                  <div className="flex justify-between gap-4"><dt className="text-mist-400">Diretório de saída</dt><dd className="max-w-[18rem] break-all text-right">{selected.job.outputDirectory || "—"}</dd></div>
                 </dl>
               </div>
 
-              {selected.job.errorMessage ? <div className="rounded-3xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200"><p className="font-medium">Error trace</p><p className="mt-2 whitespace-pre-wrap leading-6">{selected.job.errorMessage}</p></div> : null}
+              {selected.job.errorMessage ? <div className="rounded-3xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200"><p className="font-medium">Rastro de erro</p><p className="mt-2 whitespace-pre-wrap leading-6">{selected.job.errorMessage}</p></div> : null}
 
               <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-4">
-                <p className="text-sm font-medium text-mist-100">Log excerpt</p>
-                <pre className="soniva-scrollbar mt-3 max-h-56 overflow-auto whitespace-pre-wrap text-xs leading-6 text-mist-300">{selected.job.logExcerpt || "No log excerpt persisted yet."}</pre>
+                <p className="text-sm font-medium text-mist-100">Trecho de log</p>
+                <pre className="soniva-scrollbar mt-3 max-h-56 overflow-auto whitespace-pre-wrap text-xs leading-6 text-mist-300">{selected.job.logExcerpt || "Nenhum trecho de log persistido ainda."}</pre>
               </div>
 
-              {selected.detail ? <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-4"><p className="text-sm font-medium text-mist-100">Linked media metadata</p><pre className="soniva-scrollbar mt-3 max-h-56 overflow-auto whitespace-pre-wrap text-xs leading-6 text-mist-300">{prettyJson(selected.detail.metadataJson)}</pre></div> : null}
+              {selected.detail ? <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-4"><p className="text-sm font-medium text-mist-100">Metadados da mídia vinculada</p><pre className="soniva-scrollbar mt-3 max-h-56 overflow-auto whitespace-pre-wrap text-xs leading-6 text-mist-300">{prettyJson(selected.detail.metadataJson)}</pre></div> : null}
             </div>
           )}
         </Card>
 
         <Card className="space-y-5">
-          <div className="flex items-center gap-2 text-rose-200"><FileWarning className="h-5 w-5" /><h3 className="text-lg font-semibold">Failure posture</h3></div>
+          <div className="flex items-center gap-2 text-rose-200"><FileWarning className="h-5 w-5" /><h3 className="text-lg font-semibold">Postura de falha</h3></div>
           {latestFailed ? (
             <div className="rounded-3xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">
               <p className="font-medium">{latestFailed.inputValue}</p>
-              <p className="mt-2 leading-6">Soniva does not swallow subprocess failures. The most recent failed job remains queryable, its logs stay attached to the record, and the UI exposes the error clearly.</p>
+              <p className="mt-2 leading-6">O Soniva não engole falhas de subprocesso. O job com falha mais recente permanece consultável, os logs ficam no registro e a UI expõe o erro com clareza.</p>
             </div>
           ) : (
-            <p className="text-sm leading-6 text-mist-300">No failed job is visible right now. During demos, you can deliberately point ffmpeg or yt-dlp to an invalid path to show the error handling posture.</p>
+            <p className="text-sm leading-6 text-mist-300">Nenhum job com falha visível agora. Na demo, carregue os dados de demonstração para inspecionar um exemplo de falha.</p>
           )}
         </Card>
       </div>

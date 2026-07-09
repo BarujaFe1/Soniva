@@ -23,25 +23,25 @@ export function OverviewPage({
   return (
     <div className="grid gap-6">
       <section className="grid gap-4 xl:grid-cols-4">
-        <StatCard label="Library items" value={metrics.totalItems} hint="Media catalogued locally" icon={<LibraryBig className="h-4 w-4" />} />
-        <StatCard label="Jobs recorded" value={metrics.totalJobs} hint="Persistent execution history" icon={<AudioLines className="h-4 w-4" />} />
-        <StatCard label="Completed" value={metrics.completedJobs} hint="Successful ingestion runs" icon={<CheckCircle2 className="h-4 w-4" />} />
-        <StatCard label="Needs attention" value={metrics.failedJobs} hint="Failed jobs available for review" icon={<AlertTriangle className="h-4 w-4" />} />
+        <StatCard label="Itens na biblioteca" value={metrics.totalItems} hint="Mídia catalogada localmente" icon={<LibraryBig className="h-4 w-4" />} />
+        <StatCard label="Jobs registrados" value={metrics.totalJobs} hint="Histórico persistente de execução" icon={<AudioLines className="h-4 w-4" />} />
+        <StatCard label="Concluídos" value={metrics.completedJobs} hint="Ingestões bem-sucedidas" icon={<CheckCircle2 className="h-4 w-4" />} />
+        <StatCard label="Atenção" value={metrics.failedJobs} hint="Jobs com falha para revisão" icon={<AlertTriangle className="h-4 w-4" />} />
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1.3fr_0.9fr]">
         <Card className="space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-mist-400">Recent jobs</p>
-              <h3 className="text-xl font-semibold text-mist-50">Execution trace</h3>
+              <p className="text-sm text-mist-400">Jobs recentes</p>
+              <h3 className="text-xl font-semibold text-mist-50">Rastro de execução</h3>
             </div>
-            <Badge tone="neutral">{jobs.length} visible</Badge>
+            <Badge tone="neutral">{jobs.length} visíveis</Badge>
           </div>
           {jobs.length === 0 ? (
-            <EmptyState eyebrow="No jobs yet" title="The queue is empty." description="Configure settings first, then start with a short authorized URL or a local media file to generate your first persisted job history.">
+            <EmptyState eyebrow="Nenhum job ainda" title="A fila está vazia." description="Configure as opções primeiro ou carregue os dados de demonstração para explorar o fluxo completo.">
               <Button onClick={() => onPageChange(bootstrap?.libraryRoot ? "ingest" : "settings")}>
-                {bootstrap?.libraryRoot ? "Create First Job" : "Configure Settings"}
+                {bootstrap?.libraryRoot ? "Criar primeiro job" : "Abrir configurações"}
               </Button>
             </EmptyState>
           ) : (
@@ -51,12 +51,12 @@ export function OverviewPage({
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <h4 className="font-medium text-mist-100">{job.inputValue}</h4>
-                      <p className="mt-1 text-xs text-mist-400">Created {relativeTime(job.createdAt)} · Updated {formatDateTime(job.updatedAt)}</p>
+                      <p className="mt-1 text-xs text-mist-400">Criado {relativeTime(job.createdAt)} · Atualizado {formatDateTime(job.updatedAt)}</p>
                     </div>
                     <Badge tone={job.status === "completed" ? "success" : job.status === "failed" ? "danger" : "accent"}>{job.status}</Badge>
                   </div>
                   <p className="mt-3 text-sm text-mist-300">
-                    Stage: <span className="text-mist-50">{job.stage}</span>
+                    Etapa: <span className="text-mist-50">{job.stage}</span>
                   </p>
                 </article>
               ))}
@@ -66,29 +66,29 @@ export function OverviewPage({
 
         <Card className="space-y-5">
           <div>
-            <p className="text-sm text-mist-400">Environment</p>
-            <h3 className="text-xl font-semibold text-mist-50">Resolved workspace</h3>
+            <p className="text-sm text-mist-400">Ambiente</p>
+            <h3 className="text-xl font-semibold text-mist-50">Espaço resolvido</h3>
           </div>
           <dl className="space-y-4 text-sm">
             <div>
-              <dt className="text-mist-400">Application data directory</dt>
+              <dt className="text-mist-400">Diretório de dados do app</dt>
               <dd className="mt-1 break-all text-mist-50">{bootstrap?.appDataDir ?? "—"}</dd>
             </div>
             <div>
-              <dt className="text-mist-400">SQLite database</dt>
+              <dt className="text-mist-400">Banco SQLite</dt>
               <dd className="mt-1 break-all text-mist-50">{bootstrap?.databasePath ?? "—"}</dd>
             </div>
             <div>
-              <dt className="text-mist-400">Configured library root</dt>
+              <dt className="text-mist-400">Raiz da biblioteca</dt>
               <dd className="mt-1 break-all text-mist-50">{bootstrap?.libraryRoot ?? "—"}</dd>
             </div>
           </dl>
           <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-4 text-sm text-mist-300">
-            <p className="font-medium text-mist-100">Portfolio note</p>
+            <p className="font-medium text-mist-100">Nota de portfólio</p>
             <p className="mt-2 leading-6">
-              Soniva intentionally favors predictable local workflows over feature inflation:
-              SQLite for persistence, a compact Rust core for OS integrations, and a React surface
-              optimized for clarity and screenshots.
+              O Soniva prioriza fluxos locais previsíveis: SQLite para persistência, núcleo Rust
+              compacto para integrações de SO e superfície React otimizada para clareza. Esta demo
+              web simula o estado sem binários nativos.
             </p>
           </div>
         </Card>
@@ -97,15 +97,15 @@ export function OverviewPage({
       <Card className="space-y-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-mist-400">Library preview</p>
-            <h3 className="text-xl font-semibold text-mist-50">Newest catalog entries</h3>
+            <p className="text-sm text-mist-400">Prévia da biblioteca</p>
+            <h3 className="text-xl font-semibold text-mist-50">Entradas mais recentes</h3>
           </div>
-          <Badge tone="neutral">{library.length} items loaded</Badge>
+          <Badge tone="neutral">{library.length} itens carregados</Badge>
         </div>
         {library.length === 0 ? (
-          <EmptyState eyebrow="Library is empty" title="Nothing has been ingested yet." description="After the first successful job, Soniva will show extracted audio, metadata footprint, library directory, and the most recent thumbnail when available.">
+          <EmptyState eyebrow="Biblioteca vazia" title="Nada foi ingerido ainda." description="Após o primeiro job bem-sucedido — ou ao carregar a demo — o Soniva mostra áudio extraído, metadados e diretório gerenciado.">
             <Button onClick={() => onPageChange("ingest")}>
-              Go to Ingest
+              Ir para ingestão
             </Button>
           </EmptyState>
         ) : (
@@ -115,7 +115,7 @@ export function OverviewPage({
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h4 className="font-medium text-mist-100">{item.title}</h4>
-                    <p className="mt-1 text-sm text-mist-400">{item.sourceLabel || "Local source"}</p>
+                    <p className="mt-1 text-sm text-mist-400">{item.sourceLabel || "Fonte local"}</p>
                   </div>
                   <Badge tone={item.status === "ready" ? "success" : "warning"}>{item.status}</Badge>
                 </div>

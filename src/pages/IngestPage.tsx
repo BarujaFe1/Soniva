@@ -1,4 +1,3 @@
-import { open } from "@tauri-apps/plugin-dialog";
 import { AlertTriangle, CheckCircle2, FileAudio2, Link2, Loader2, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "../components/ui/Button";
@@ -8,6 +7,7 @@ import { Input } from "../components/ui/Input";
 import { Badge } from "../components/ui/Badge";
 import { useToast } from "../hooks/useToast";
 import type { BootstrapResponse, IngestionRequest, IngestionJobRecord } from "../types";
+import { pickFile } from "../lib/dialog";
 import { startIngestionJob } from "../lib/tauri";
 
 export function IngestPage({
@@ -35,24 +35,22 @@ export function IngestPage({
     if (sourceKind === "local_file") {
       return {
         ready: hasLibraryRoot && hasFfmpeg,
-        message: "Resolve the library root and ffmpeg in Settings first. yt-dlp is only required for URL ingestion."
+        message: "Resolva a raiz da biblioteca e o ffmpeg em Configurações primeiro. O yt-dlp só é necessário para ingestão por URL."
       };
     }
 
     return {
       ready: hasLibraryRoot && hasYtDlp && hasFfmpeg,
-      message: "Resolve the library root, yt-dlp, and ffmpeg in Settings first."
+      message: "Resolva a raiz da biblioteca, yt-dlp e ffmpeg em Configurações primeiro."
     };
   }, [bootstrap, sourceKind]);
 
   async function handleBrowseFile() {
-    const selected = await open({
-      directory: false,
-      multiple: false,
-      filters: [{ name: "Media", extensions: ["mp4", "mov", "mkv", "webm", "mp3", "wav", "m4a", "aac", "flac", "ogg"] }]
-    });
+    const selected = await pickFile([
+      { name: "Media", extensions: ["mp4", "mov", "mkv", "webm", "mp3", "wav", "m4a", "aac", "flac", "ogg"] }
+    ]);
 
-    if (typeof selected === "string") {
+    if (selected) {
       setInputValue(selected);
       setSourceKind("local_file");
     }
@@ -60,8 +58,8 @@ export function IngestPage({
 
   async function handleSubmit() {
     setFeedback(null);
-    if (!inputValue.trim()) return setFeedback("Provide a URL or choose a local media file.");
-    if (!authorized) return setFeedback("Confirm authorized usage before creating a job.");
+    if (!inputValue.trim()) return setFeedback("Informe uma URL ou escolha um arquivo de mídia local.");
+    if (!authorized) return setFeedback("Confirme o uso autorizado antes de criar o job.");
     if (!requirements.ready) return setFeedback(requirements.message);
 
     if (bootstrap?.overwritePolicy === "replace") {
@@ -78,11 +76,11 @@ export function IngestPage({
       await startIngestionJob({ sourceKind, inputValue: inputValue.trim(), authorized });
       setInputValue("");
       setAuthorized(false);
-      setFeedback("Job queued successfully. The Jobs and Library views will refresh automatically.");
-      showToast("success", "Job queued successfully");
+      setFeedback("Job enfileirado com sucesso. As views de Jobs e Biblioteca atualizam automaticamente.");
+      showToast("success", "Job enfileirado com sucesso");
       await onSubmitted();
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "Unable to queue the job.";
+      const errorMsg = error instanceof Error ? error.message : "Não foi possível enfileirar o job.";
       setFeedback(errorMsg);
       showToast("error", errorMsg);
     } finally {
@@ -96,54 +94,54 @@ export function IngestPage({
       <Card className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-mist-400">Primary workflow</p>
-            <h3 className="text-2xl font-semibold text-mist-50">Create an authorized ingestion job</h3>
+            <p className="text-sm text-mist-400">Fluxo principal</p>
+            <h3 className="text-2xl font-semibold text-mist-50">Criar job de ingestão autorizada</h3>
           </div>
-          <Badge tone={requirements.ready ? "success" : "warning"}>{requirements.ready ? "Environment ready" : "Setup required"}</Badge>
+          <Badge tone={requirements.ready ? "success" : "warning"}>{requirements.ready ? "Ambiente pronto" : "Configuração necessária"}</Badge>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <button className={`rounded-3xl border p-4 text-left transition ${sourceKind === "url" ? "border-accent-400/40 bg-accent-500/10" : "border-white/10 bg-white/[0.02] hover:bg-white/[0.04]"}`} onClick={() => setSourceKind("url")}>
             <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/[0.05]"><Link2 className="h-5 w-5" /></div>
-            <h4 className="font-medium text-mist-100">Authorized URL</h4>
-            <p className="mt-2 text-sm leading-6 text-mist-400">Collect metadata with yt-dlp, preserve sidecar files, and extract a local audio asset.</p>
+            <h4 className="font-medium text-mist-100">URL autorizada</h4>
+            <p className="mt-2 text-sm leading-6 text-mist-400">Coleta metadados com yt-dlp, preserva sidecars e extrai um asset de áudio local.</p>
           </button>
           <button className={`rounded-3xl border p-4 text-left transition ${sourceKind === "local_file" ? "border-accent-400/40 bg-accent-500/10" : "border-white/10 bg-white/[0.02] hover:bg-white/[0.04]"}`} onClick={() => setSourceKind("local_file")}>
             <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/[0.05]"><FileAudio2 className="h-5 w-5" /></div>
-            <h4 className="font-medium text-mist-100">Local source file</h4>
-            <p className="mt-2 text-sm leading-6 text-mist-400">Copy an existing local asset into the managed library and extract audio in the same pipeline.</p>
+            <h4 className="font-medium text-mist-100">Arquivo local</h4>
+            <p className="mt-2 text-sm leading-6 text-mist-400">Copia um asset local para a biblioteca gerenciada e extrai áudio no mesmo pipeline.</p>
           </button>
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-4 text-sm text-mist-300">
           {sourceKind === "url"
-            ? "URL ingestion needs the library root plus both yt-dlp and ffmpeg."
-            : "Local-file ingestion needs the library root and ffmpeg. yt-dlp is not required for this mode."}
+            ? "A ingestão por URL precisa da raiz da biblioteca, yt-dlp e ffmpeg."
+            : "A ingestão de arquivo local precisa da raiz da biblioteca e do ffmpeg. O yt-dlp não é necessário neste modo."}
         </div>
 
         <div className="space-y-3">
-          <label className="block text-sm text-mist-400">{sourceKind === "url" ? "Source URL" : "Local media file"}</label>
+          <label className="block text-sm text-mist-400">{sourceKind === "url" ? "URL de origem" : "Arquivo de mídia local"}</label>
           <div className="flex flex-col gap-3 md:flex-row">
-            <Input placeholder={sourceKind === "url" ? "https://example.com/authorized-source" : "/Users/you/media/example.mov"} value={inputValue} onChange={(event) => setInputValue(event.target.value)} />
-            {sourceKind === "local_file" ? <Button variant="secondary" onClick={() => void handleBrowseFile()}>Browse file</Button> : null}
+            <Input placeholder={sourceKind === "url" ? "https://example.com/fonte-autorizada" : "C:/Users/voce/media/exemplo.mov"} value={inputValue} onChange={(event) => setInputValue(event.target.value)} />
+            {sourceKind === "local_file" ? <Button variant="secondary" onClick={() => void handleBrowseFile()}>Escolher arquivo</Button> : null}
           </div>
         </div>
 
         <label className="flex cursor-pointer items-start gap-3 rounded-3xl border border-white/10 bg-white/[0.02] p-4">
           <input className="mt-1 h-4 w-4 rounded border-white/10 bg-transparent accent-accent-500" type="checkbox" checked={authorized} onChange={(event) => setAuthorized(event.target.checked)} />
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-mist-100"><ShieldCheck className="h-4 w-4 text-mint-400" />I confirm that this source is authorized for local ingestion.</div>
-            <p className="text-sm leading-6 text-mist-400">Use this project only with your own media, public-domain material, freely licensed work, or other sources you are permitted to preserve locally.</p>
+            <div className="flex items-center gap-2 text-mist-100"><ShieldCheck className="h-4 w-4 text-mint-400" />Confirmo que esta fonte está autorizada para ingestão local.</div>
+            <p className="text-sm leading-6 text-mist-400">Use este projeto apenas com mídia própria, domínio público, obras licenciadas livremente ou outras fontes que você tem permissão para preservar localmente.</p>
           </div>
         </label>
 
         {feedback ? <div className="rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3 text-sm text-mist-200">{feedback}</div> : null}
 
         <div className="flex items-center justify-between gap-4">
-          <p className="text-sm text-mist-400">Soniva creates a persisted job immediately and updates status as the local pipeline progresses.</p>
+          <p className="text-sm text-mist-400">O Soniva cria um job persistido imediatamente e atualiza o status conforme o pipeline avança.</p>
           <Button onClick={() => void handleSubmit()} disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            Queue job
+            Enfileirar job
           </Button>
         </div>
       </Card>
@@ -151,26 +149,26 @@ export function IngestPage({
       <div className="grid gap-6">
         <Card className="space-y-5">
           <div>
-            <p className="text-sm text-mist-400">What the pipeline does</p>
-            <h3 className="text-xl font-semibold text-mist-50">Conservative local stages</h3>
+            <p className="text-sm text-mist-400">O que o pipeline faz</p>
+            <h3 className="text-xl font-semibold text-mist-50">Etapas locais conservadoras</h3>
           </div>
           <ol className="space-y-3 text-sm text-mist-300">
-            <li>1. Validate only the tools required by the selected source kind.</li>
-            <li>2. Persist a job row before any long-running work begins.</li>
-            <li>3. Collect structured metadata and sidecar files.</li>
-            <li>4. Organize the source asset in a predictable item directory.</li>
-            <li>5. Apply the configured overwrite policy when Soniva recognizes the same source again.</li>
-            <li>6. Extract a local MP3 with ffmpeg and persist the resulting path.</li>
+            <li>1. Validar apenas as ferramentas exigidas pelo tipo de origem.</li>
+            <li>2. Persistir a linha do job antes de qualquer trabalho longo.</li>
+            <li>3. Coletar metadados estruturados e arquivos sidecar.</li>
+            <li>4. Organizar o asset em um diretório previsível.</li>
+            <li>5. Aplicar a política de sobrescrita quando a mesma origem for reconhecida.</li>
+            <li>6. Extrair um MP3 local com ffmpeg e persistir o caminho resultante.</li>
           </ol>
         </Card>
 
         <Card className="space-y-5">
           <div>
-            <p className="text-sm text-mist-400">Most recent submission</p>
-            <h3 className="text-xl font-semibold text-mist-50">Latest visible job</h3>
+            <p className="text-sm text-mist-400">Envio mais recente</p>
+            <h3 className="text-xl font-semibold text-mist-50">Último job visível</h3>
           </div>
           {!latestJob ? (
-            <EmptyState eyebrow="No submission yet" title="Queue the first job to populate this panel." description="This view updates automatically once a job is queued and can be used during demos to show that the app persists execution history immediately." />
+            <EmptyState eyebrow="Nenhum envio ainda" title="Enfileire o primeiro job para preencher este painel." description="Esta view atualiza automaticamente e serve bem em demos para mostrar que o app persiste o histórico de execução imediatamente." />
           ) : (
             <div className="space-y-4">
               <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-4">
@@ -178,17 +176,17 @@ export function IngestPage({
                   <p className="font-medium text-mist-100">{latestJob.inputValue}</p>
                   <Badge tone={latestJob.status === "completed" ? "success" : latestJob.status === "failed" ? "danger" : "accent"}>{latestJob.status}</Badge>
                 </div>
-                <p className="mt-2 text-sm text-mist-300">Stage: {latestJob.stage}</p>
+                <p className="mt-2 text-sm text-mist-300">Etapa: {latestJob.stage}</p>
               </div>
               {latestJob.errorMessage ? (
                 <div className="rounded-3xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200">
-                  <div className="mb-2 flex items-center gap-2 font-medium"><AlertTriangle className="h-4 w-4" />Execution error</div>
+                  <div className="mb-2 flex items-center gap-2 font-medium"><AlertTriangle className="h-4 w-4" />Erro de execução</div>
                   <p className="leading-6">{latestJob.errorMessage}</p>
                 </div>
               ) : (
                 <div className="rounded-3xl border border-mint-400/20 bg-mint-400/10 p-4 text-sm text-mint-100">
-                  <div className="mb-2 flex items-center gap-2 font-medium"><CheckCircle2 className="h-4 w-4" />Good demo behavior</div>
-                  <p className="leading-6">Every new run writes a job row first, which makes the product feel responsive even when yt-dlp or ffmpeg still have work to do.</p>
+                  <div className="mb-2 flex items-center gap-2 font-medium"><CheckCircle2 className="h-4 w-4" />Bom comportamento de demo</div>
+                  <p className="leading-6">Cada nova execução grava a linha do job primeiro, o que deixa o produto responsivo mesmo enquanto yt-dlp ou ffmpeg ainda trabalham.</p>
                 </div>
               )}
             </div>
@@ -203,22 +201,22 @@ export function IngestPage({
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-400/20">
                 <AlertTriangle className="h-5 w-5 text-rose-300" />
               </div>
-              <h3 className="text-xl font-semibold text-mist-50">Replace existing item?</h3>
+              <h3 className="text-xl font-semibold text-mist-50">Substituir item existente?</h3>
             </div>
             <p className="text-sm leading-6 text-mist-300">
-              Your overwrite policy is set to <span className="font-medium text-mist-100">replace</span>. If this source already exists in your library, 
-              the previous catalog entry and its library directory will be removed after the new ingestion succeeds.
+              Sua política de sobrescrita está em <span className="font-medium text-mist-100">replace</span>. Se esta origem já existir na biblioteca,
+              a entrada anterior e seu diretório serão removidos após a nova ingestão.
             </p>
             <p className="text-sm leading-6 text-mist-400">
-              This action cannot be undone. Consider switching to <span className="font-medium">skip</span> policy in Settings if you want to preserve existing items.
+              Esta ação não pode ser desfeita. Considere mudar para a política <span className="font-medium">skip</span> em Configurações se quiser preservar itens existentes.
             </p>
             <div className="flex gap-3">
               <Button variant="secondary" onClick={() => setShowReplaceWarning(false)} className="flex-1">
-                Cancel
+                Cancelar
               </Button>
               <Button variant="danger" onClick={() => void executeSubmit()} disabled={loading} className="flex-1">
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                Confirm Replace
+                Confirmar substituição
               </Button>
             </div>
           </Card>

@@ -3,11 +3,11 @@ import type { AppPage, BootstrapResponse } from "../types";
 import { cn } from "../lib/utils";
 
 const nav = [
-  { id: "overview", label: "Overview", icon: House },
-  { id: "ingest", label: "Authorized ingest", icon: AudioLines },
-  { id: "library", label: "Library", icon: LibraryBig },
+  { id: "overview", label: "Visão geral", icon: House },
+  { id: "ingest", label: "Ingestão autorizada", icon: AudioLines },
+  { id: "library", label: "Biblioteca", icon: LibraryBig },
   { id: "jobs", label: "Jobs", icon: ListChecks },
-  { id: "settings", label: "Settings", icon: Settings }
+  { id: "settings", label: "Configurações", icon: Settings }
 ] as const;
 
 export function Sidebar({
@@ -28,12 +28,12 @@ export function Sidebar({
           </div>
           <div>
             <h1 className="text-lg font-semibold tracking-tight">Soniva</h1>
-            <p className="text-sm text-mist-400">Authorized media ingestion, locally.</p>
+            <p className="text-sm text-mist-400">Ingestão autorizada, localmente.</p>
           </div>
         </div>
         <p className="text-sm leading-6 text-mist-300">
-          Designed for public-domain, licensed, or otherwise permitted sources. Every artifact
-          stays on the machine you control.
+          Pensado para fontes de domínio público, licenciadas ou de outra forma permitidas. Cada
+          artefato permanece na máquina que você controla.
         </p>
       </div>
 
@@ -56,9 +56,9 @@ export function Sidebar({
       </nav>
 
       <div className="mt-auto rounded-3xl border border-white/10 bg-white/[0.03] p-4 text-sm text-mist-300">
-        <p className="font-medium text-mist-100">Workspace</p>
+        <p className="font-medium text-mist-100">Espaço de trabalho</p>
         <p className="mt-2 break-all text-xs leading-5 text-mist-400">
-          DB: {bootstrap?.databasePath ?? "Waiting for bootstrap…"}
+          DB: {bootstrap?.databasePath ?? "Aguardando bootstrap…"}
         </p>
       </div>
     </div>

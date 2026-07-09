@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AppShell } from "./components/layout/AppShell";
+import { PortfolioHeader } from "./components/PortfolioHeader";
 import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
 import { listJobs, readSettingsMap, countDashboardMetrics } from "./lib/repositories";
 import { bootstrapApp, listLibraryItems } from "./lib/tauri";
+import { isDemoLoaded, loadDemoData, subscribeWebStore } from "./lib/webStore";
 import { usePolling } from "./hooks/usePolling";
-import { ToastProvider } from "./hooks/useToast";
+import { ToastProvider, useToast } from "./hooks/useToast";
 import { IngestPage } from "./pages/IngestPage";
 import { JobsPage } from "./pages/JobsPage";
 import { LibraryPage } from "./pages/LibraryPage";
@@ -21,7 +23,7 @@ const defaultSettings: SettingsPayload = {
   overwritePolicy: "skip"
 };
 
-export default function App() {
+function AppContent() {
   const [page, setPage] = useState<AppPage>("overview");
   const [bootstrap, setBootstrap] = useState<BootstrapResponse | null>(null);
   const [jobs, setJobs] = useState<IngestionJobRecord[]>([]);
@@ -30,6 +32,8 @@ export default function App() {
   const [libraryQuery, setLibraryQuery] = useState("");
   const [libraryFilter, setLibraryFilter] = useState<LibraryFilter>("all");
   const [metrics, setMetrics] = useState<DashboardMetrics>({ totalItems: 0, totalJobs: 0, completedJobs: 0, failedJobs: 0 });
+  const [demoLoaded, setDemoLoaded] = useState(isDemoLoaded());
+  const { showToast } = useToast();
 
   const refreshBootstrap = useCallback(async () => {
     setBootstrap(await bootstrapApp());
@@ -60,10 +64,17 @@ export default function App() {
 
   const fullRefresh = useCallback(async () => {
     await Promise.all([refreshBootstrap(), refreshSettings(), refreshJobs(), refreshLibrary(), refreshMetrics()]);
+    setDemoLoaded(isDemoLoaded());
   }, [refreshBootstrap, refreshSettings, refreshJobs, refreshLibrary, refreshMetrics]);
 
   useEffect(() => {
     void fullRefresh();
+  }, [fullRefresh]);
+
+  useEffect(() => {
+    return subscribeWebStore(() => {
+      void fullRefresh();
+    });
   }, [fullRefresh]);
 
   usePolling(() => Promise.all([refreshJobs(), refreshLibrary(), refreshMetrics()]).then(() => undefined), 3500, true);
@@ -74,8 +85,15 @@ export default function App() {
     setPage(newPage);
   };
 
+  const handleLoadDemo = () => {
+    loadDemoData();
+    showToast("success", "Dados de demonstração carregados");
+    setPage("overview");
+  };
+
   return (
-    <ToastProvider>
+    <div className="min-h-screen">
+      <PortfolioHeader demoLoaded={demoLoaded} onLoadDemo={handleLoadDemo} />
       <AppShell sidebar={<Sidebar page={page} onPageChange={handlePageChange} bootstrap={bootstrap} />} topbar={<Topbar bootstrap={bootstrap} />}>
         {page === "overview" ? <OverviewPage bootstrap={bootstrap} metrics={metrics} jobs={jobs} library={library} onPageChange={handlePageChange} /> : null}
         {page === "ingest" ? <IngestPage bootstrap={bootstrap} onSubmitted={fullRefresh} latestJob={latestJob} /> : null}
@@ -83,6 +101,14 @@ export default function App() {
         {page === "jobs" ? <JobsPage jobs={jobs} onRefresh={fullRefresh} onPageChange={handlePageChange} /> : null}
         {page === "settings" ? <SettingsPage initial={settings} bootstrap={bootstrap} onSaved={fullRefresh} /> : null}
       </AppShell>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
     </ToastProvider>
   );
 }

@@ -9,15 +9,14 @@ export function Topbar({ bootstrap }: { bootstrap: BootstrapResponse | null }) {
         <div className="mb-3 flex items-center gap-2">
           <Badge tone="accent">Desktop-first</Badge>
           <Badge tone="success">Local-first</Badge>
-          <Badge tone="neutral">Authorized use only</Badge>
+          <Badge tone="neutral">Somente uso autorizado</Badge>
         </div>
         <h2 className="text-3xl font-semibold tracking-tight text-gradient">
-          A composed ingestion workflow for local media libraries.
+          Fluxo composto de ingestão para bibliotecas locais de mídia.
         </h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-mist-300">
-          Configure a root directory, validate yt-dlp and ffmpeg, run ingestion jobs, and keep
-          metadata, thumbnails, source traces, and extracted audio assets in one coherent local
-          catalog.
+          Configure a pasta raiz, valide yt-dlp e ffmpeg, execute jobs de ingestão e mantenha
+          metadados, thumbnails, rastros de origem e áudio extraído em um catálogo local coerente.
         </p>
       </div>
 
@@ -25,10 +24,10 @@ export function Topbar({ bootstrap }: { bootstrap: BootstrapResponse | null }) {
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
           <div className="mb-2 flex items-center gap-2 text-mist-400">
             <FolderRoot className="h-4 w-4" />
-            <span className="text-xs uppercase tracking-[0.2em]">Library root</span>
+            <span className="text-xs uppercase tracking-[0.2em]">Raiz da biblioteca</span>
           </div>
           <p className="text-sm font-medium text-mist-50">
-            {bootstrap?.libraryRoot || "Not configured yet"}
+            {bootstrap?.libraryRoot || "Ainda não configurada"}
           </p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -37,7 +36,7 @@ export function Topbar({ bootstrap }: { bootstrap: BootstrapResponse | null }) {
             <span className="text-xs uppercase tracking-[0.2em]">yt-dlp</span>
           </div>
           <p className="text-sm font-medium text-mist-50">
-            {bootstrap?.detectedYtDlpPath || "Resolve in settings"}
+            {bootstrap?.detectedYtDlpPath || "Resolver em Configurações"}
           </p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -46,7 +45,7 @@ export function Topbar({ bootstrap }: { bootstrap: BootstrapResponse | null }) {
             <span className="text-xs uppercase tracking-[0.2em]">ffmpeg</span>
           </div>
           <p className="text-sm font-medium text-mist-50">
-            {bootstrap?.detectedFfmpegPath || "Resolve in settings"}
+            {bootstrap?.detectedFfmpegPath || "Resolver em Configurações"}
           </p>
         </div>
       </div>
