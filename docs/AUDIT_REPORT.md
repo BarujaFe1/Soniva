@@ -75,5 +75,7 @@ A nota inicial (~6) vinha de: docs de auditoria/handoff poluindo a raiz, bugs de
 - [x] README portfólio
 - [x] Docs técnicas
 - [ ] Build Tauri nativo (requer toolchain Rust local do revisor)
-- [ ] Screenshots reais no README (placeholder documentado)
-- [ ] Deploy Vercel da demo (instruções em DEPLOYMENT.md)
+- [x] Screenshots reais no README (`docs/screenshots/`)
+- [~] Deploy Vercel da demo (preview atual READY; **produção pode estar stale** — promote manual)
+- [x] Papel de portfólio definido: **selecionado (breadth)**
+- [x] Supermegaprompt: `C:\dev\prompts_para_port\soniva-supermegaprompt-portfolio.md`
