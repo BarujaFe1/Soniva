@@ -19,11 +19,25 @@ npm run build
 
 Configuração: `vercel.json` (SPA rewrite + `outputDirectory: dist`).
 
+### Estado conhecido (2026-07-13)
+
+| URL | Notas |
+|---|---|
+| `https://soniva-seven.vercel.app` | Domínio de produção — **pode servir commit antigo**; promote via CLI falhou (auth/scope) nesta auditoria |
+| Preview do `chore/portfolio-quality-pass` | READY, mas com **Deployment Protection** (login Vercel) |
+| Local | Caminho preferido: `npm run dev` + `?demo=1` |
+
+Para atualizar produção (ação humana):
+
+1. Abrir o deployment recente no dashboard Vercel.
+2. **Promote to Production**.
+3. Opcional: desativar Deployment Protection na demo pública de portfólio.
+
 ### Checklist pós-deploy
 
-1. Abrir a URL → header “Demo web” visível.
-2. Clicar **Carregar dados de demonstração**.
-3. Navegar Overview → Library → Jobs → Ingest (job simulado) → Settings.
+1. Abrir a URL → header “Demo web (simulado)” visível.
+2. Usar `?demo=1` ou clicar **Carregar dados de demonstração**.
+3. Navegar Overview → Library → Jobs → Ingest → Settings.
 4. Confirmar que não há erros de `invoke` no console.
 
 ### Variáveis
