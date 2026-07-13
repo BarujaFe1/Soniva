@@ -30,12 +30,21 @@ export function SettingsPage({
     setForm(initial);
   }, [initial]);
 
-  const effectiveYtPath = ytProbe?.resolvedPath ?? bootstrap?.detectedYtDlpPath ?? null;
-  const effectiveFfmpegPath = ffmpegProbe?.resolvedPath ?? bootstrap?.detectedFfmpegPath ?? null;
-  const ready = useMemo(
-    () => Boolean(form.libraryRoot.trim() && effectiveYtPath && effectiveFfmpegPath),
-    [effectiveFfmpegPath, effectiveYtPath, form.libraryRoot]
+  const effectiveYtPath =
+    ytProbe?.resolvedPath ?? (form.ytDlpPath.trim() || bootstrap?.detectedYtDlpPath || null);
+  const effectiveFfmpegPath =
+    ffmpegProbe?.resolvedPath ?? (form.ffmpegPath.trim() || bootstrap?.detectedFfmpegPath || null);
+  const localReady = useMemo(
+    () => Boolean(form.libraryRoot.trim() && effectiveFfmpegPath),
+    [effectiveFfmpegPath, form.libraryRoot]
   );
+  const urlReady = useMemo(() => Boolean(localReady && effectiveYtPath), [effectiveYtPath, localReady]);
+  const readinessLabel = urlReady
+    ? "Pronto (URL + local)"
+    : localReady
+      ? "Pronto (apenas local)"
+      : "Precisa completar";
+  const readinessTone = urlReady || localReady ? "success" : "warning";
 
   async function handlePickDirectory() {
     const selected = await pickDirectory();
@@ -97,7 +106,7 @@ export function SettingsPage({
             <p className="text-sm text-mist-400">Configuração</p>
             <h3 className="text-2xl font-semibold text-mist-50">Ambiente local</h3>
           </div>
-          <Badge tone={ready ? "success" : "warning"}>{ready ? "Pronto para ingerir" : "Precisa completar"}</Badge>
+          <Badge tone={readinessTone}>{readinessLabel}</Badge>
         </div>
 
         <div className="space-y-3">

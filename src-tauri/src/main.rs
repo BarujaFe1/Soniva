@@ -31,6 +31,7 @@ fn bootstrap_app(app: AppHandle, state: State<AppState>) -> Result<BootstrapResp
         detected_yt_dlp_path: detected_yt_dlp.resolved_path,
         detected_ffmpeg_path: detected_ffmpeg.resolved_path,
         app_version: app.package_info().version.to_string(),
+        overwrite_policy: resolved.overwrite_policy,
     })
 }
 
@@ -90,30 +91,54 @@ fn get_job_detail(state: State<AppState>, jobId: String) -> Result<crate::models
 
 #[tauri::command]
 fn open_in_file_manager(path: String) -> Result<(), String> {
+    let target = PathBuf::from(&path);
+    if !target.exists() {
+        return Err(format!("Path does not exist: {}", path));
+    }
+
     #[cfg(target_os = "windows")]
     {
-        std::process::Command::new("explorer")
-            .arg(&path)
+        // Prefer selecting a file in Explorer; open directories as folders.
+        let mut command = std::process::Command::new("explorer");
+        if target.is_file() {
+            command.arg("/select,").arg(&path);
+        } else {
+            command.arg(&path);
+        }
+        command
             .spawn()
             .map_err(|e| format!("Failed to open file manager: {}", e))?;
     }
-    
+
     #[cfg(target_os = "macos")]
     {
-        std::process::Command::new("open")
-            .arg(&path)
+        let mut command = std::process::Command::new("open");
+        if target.is_file() {
+            command.arg("-R").arg(&path);
+        } else {
+            command.arg(&path);
+        }
+        command
             .spawn()
             .map_err(|e| format!("Failed to open file manager: {}", e))?;
     }
-    
+
     #[cfg(target_os = "linux")]
     {
+        let open_target = if target.is_file() {
+            target
+                .parent()
+                .map(|parent| parent.display().to_string())
+                .unwrap_or(path.clone())
+        } else {
+            path.clone()
+        };
         std::process::Command::new("xdg-open")
-            .arg(&path)
+            .arg(open_target)
             .spawn()
             .map_err(|e| format!("Failed to open file manager: {}", e))?;
     }
-    
+
     Ok(())
 }
 

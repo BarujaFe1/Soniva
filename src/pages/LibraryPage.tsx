@@ -1,6 +1,7 @@
 import { FolderOpen, Search, SlidersHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { AppPage, LibraryFilter, LibraryListItem, MediaItemDetail } from "../types";
+import { MediaPreview } from "../components/MediaPreview";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
@@ -31,13 +32,32 @@ export function LibraryPage({
 
   useEffect(() => {
     const nextId = items[0]?.id ?? null;
-    setSelectedId((current) => current ?? nextId);
+    setSelectedId((current) => {
+      if (current && items.some((item) => item.id === current)) return current;
+      return nextId;
+    });
   }, [items]);
 
   useEffect(() => {
-    if (!selectedId) return setDetail(null);
-    void getMediaItemDetail(selectedId).then(setDetail);
-  }, [selectedId]);
+    if (!selectedId) {
+      setDetail(null);
+      return;
+    }
+    let cancelled = false;
+    void getMediaItemDetail(selectedId)
+      .then((next) => {
+        if (!cancelled) setDetail(next);
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setDetail(null);
+          showToast("error", error instanceof Error ? error.message : "Falha ao carregar detalhes");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedId, showToast]);
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -130,31 +150,18 @@ export function LibraryPage({
                 <Badge tone={detail.item.status === "ready" ? "success" : "warning"}>{detail.item.status}</Badge>
               </div>
 
-              {detail.item.thumbnailPath && (
+              {detail.item.thumbnailPath ? (
                 <div className="mt-4">
-                  <img 
-                    src={`asset://localhost/${detail.item.thumbnailPath.replace(/\\/g, '/')}`} 
-                    alt={detail.item.title}
-                    className="w-full rounded-2xl border border-white/10"
-                    onError={(e) => { 
-                      e.currentTarget.style.display = 'none';
-                      const fallback = document.createElement('div');
-                      fallback.className = 'flex h-48 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.02] text-mist-400';
-                      fallback.innerHTML = '<svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
-                      e.currentTarget.parentElement?.appendChild(fallback);
-                    }}
-                  />
+                  <MediaPreview path={detail.item.thumbnailPath} alt={detail.item.title} kind="image" />
                 </div>
-              )}
+              ) : null}
 
-              {detail.item.audioPath && (
-                <div className="mt-4">
-                  <p className="mb-2 text-sm font-medium text-mist-100">Prévia de áudio</p>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3 text-sm text-mist-400">
-                    Asset local: {detail.item.audioPath}
-                  </div>
+              {detail.item.audioPath ? (
+                <div className="mt-4 space-y-2">
+                  <MediaPreview path={detail.item.audioPath} alt={detail.item.title} kind="audio" />
+                  <p className="break-all text-xs text-mist-500">{detail.item.audioPath}</p>
                 </div>
-              )}
+              ) : null}
 
               <dl className="mt-4 space-y-3 text-sm text-mist-300">
                 <div><dt className="text-mist-500">Diretório da biblioteca</dt><dd className="mt-1 break-all text-mist-50">{detail.item.libraryDir}</dd></div>

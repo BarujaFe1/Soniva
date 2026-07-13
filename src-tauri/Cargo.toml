@@ -2,7 +2,7 @@
 name = "soniva"
 version = "0.1.0"
 description = "Soniva desktop application"
-authors = ["OpenAI"]
+authors = ["Felipe Alirio Baruja"]
 edition = "2021"
 
 [lib]

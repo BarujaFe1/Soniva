@@ -1,66 +1,19 @@
-# Soniva Portfolio Notes
+# Portfolio notes — Soniva
 
-## What this project communicates well
+## Pitch em 20 segundos
 
-Soniva is strongest as a portfolio piece when positioned as a disciplined local-first desktop product rather than as a media downloader.
+Soniva é um app desktop local-first para ingestão **autorizada** de mídia: organiza biblioteca, preserva metadados, extrai áudio e mantém jobs auditáveis — com uma demo web para walkthrough sem instalar Tauri.
 
-### Core themes to emphasize
-- responsible product framing
-- scope discipline
-- elegant desktop UX
-- realistic local systems integration
-- metadata modeling
-- filesystem and artifact management
-- executable documentation
+## Provas para mostrar
 
-## Interview framing
+1. Demo web com dados de demonstração.
+2. Código da façade `tauri.ts` + `webStore.ts`.
+3. Pipeline Rust (`pipeline.rs`) e schema SQLite.
+4. CI verde + testes do store.
+5. Confirmação de autorização e política replace.
 
-A concise professional framing:
+## Links
 
-> Soniva is a desktop-first, local-first media operations tool for authorized ingestion, audio extraction, metadata preservation, and structured local library management. I built it to show product discipline, thoughtful scope control, desktop systems integration, and a polished UX without inventing unnecessary backend infrastructure.
-
-## Engineering highlights
-- Tauri shell with a minimal Rust core
-- React + TypeScript + Tailwind for a refined desktop UI
-- SQLite + Drizzle for local persistence and readable data modeling
-- real process integration with `yt-dlp` and `ffmpeg`
-- explicit job/status/error handling
-- coherent library layout and traceability
-
-## Product highlights
-- clear user positioning
-- non-suspicious copy
-- local-first trust model
-- clean information architecture
-- detail views that support inspection and troubleshooting
-- portfolio-friendly visual hierarchy
-
-## What not to say
-Avoid presenting Soniva as:
-- a downloader for anything on the internet
-- a ripping tool
-- a bypass tool
-- a universal media grabber
-
-## What to say instead
-Prefer:
-- authorized ingestion
-- owned or licensed media workflows
-- archive preparation
-- metadata preservation
-- local library organization
-- desktop operational tooling
-
-## Best demo sequence
-1. open Overview
-2. open Settings and show binary/library configuration
-3. start an authorized job
-4. watch Jobs update live
-5. open Library and inspect the resulting item
-6. show the managed filesystem layout
-
-## Resume bullet example
-- Built **Soniva**, a desktop-first local media operations app with **Tauri, React, TypeScript, SQLite, Drizzle, yt-dlp, and ffmpeg**, featuring authorized ingestion, audio extraction, metadata preservation, job tracking, and searchable local library management.
-
-## LinkedIn / GitHub description example
-- Soniva is a polished local-first desktop application for authorized media ingestion, audio extraction, metadata preservation, and structured local library organization.
+- Repo: https://github.com/BarujaFe1/Soniva
+- Portfólio: https://barujafe1.vercel.app
+- Docs: `docs/ARCHITECTURE.md`, `docs/HANDOFF.md`

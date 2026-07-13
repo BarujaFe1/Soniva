@@ -12,10 +12,12 @@ import { startIngestionJob } from "../lib/tauri";
 
 export function IngestPage({
   bootstrap,
+  overwritePolicy,
   onSubmitted,
   latestJob
 }: {
   bootstrap: BootstrapResponse | null;
+  overwritePolicy: "skip" | "replace";
   onSubmitted: () => Promise<void>;
   latestJob: IngestionJobRecord | null;
 }) {
@@ -62,7 +64,8 @@ export function IngestPage({
     if (!authorized) return setFeedback("Confirme o uso autorizado antes de criar o job.");
     if (!requirements.ready) return setFeedback(requirements.message);
 
-    if (bootstrap?.overwritePolicy === "replace") {
+    const policy = bootstrap?.overwritePolicy ?? overwritePolicy;
+    if (policy === "replace") {
       setShowReplaceWarning(true);
       return;
     }

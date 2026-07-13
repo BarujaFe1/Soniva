@@ -1,129 +1,62 @@
-# Soniva Architecture
+# Arquitetura — Soniva
 
-## Architectural goals
+## Visão em uma frase
 
-Soniva optimizes for:
+Soniva é um **shell React** que orquestra um **pipeline local** (Rust/Tauri + SQLite + ffmpeg/yt-dlp), com um **modo demo web** que simula o mesmo contrato de API em memória para portfólio.
 
-- local-first execution
-- low operational complexity
-- reliable desktop UX
-- clean metadata traceability
-- explicit local ownership of data and artifacts
-
-## Runtime topology
-
-### Frontend
-
-React + TypeScript + Tailwind render the desktop UI.
-
-Responsibilities:
-
-- page-level UX
-- settings forms
-- ingestion submission
-- jobs and library visibility
-- relational reads through Drizzle over the SQLite proxy bridge
-
-### Native layer
-
-Rust + Tauri handle privileged local operations.
-
-Responsibilities:
-
-- app-data resolution
-- SQLite bootstrap
-- settings persistence
-- command execution
-- filesystem orchestration
-- ingestion threading
-- runtime validation and error propagation
-
-### Data layer
-
-SQLite stores:
-
-- app settings
-- ingestion jobs
-- media sources
-- media items
-- extracted audio assets
-- thumbnails
-
-The live database is owned by the Tauri runtime and stored at:
-
-- `app_data_dir/soniva.sqlite`
-
-## Settings model
-
-`app_settings` stores:
-
-- `library_root`
-- `yt_dlp_path`
-- `ffmpeg_path`
-- `audio_format`
-- `overwrite_policy`
-
-Binary paths are optional when runtime auto-detection from PATH succeeds.
-
-## Ingestion rules
-
-### URL ingestion
-
-Requires:
-
-- library root
-- `yt-dlp`
-- `ffmpeg`
-
-### Local-file ingestion
-
-Requires:
-
-- library root
-- `ffmpeg`
-
-`yt-dlp` is not part of the local-file path.
-
-## Overwrite behavior
-
-Overwrite is applied only when Soniva recognizes the same source again.
-
-Matching strategy:
-
-- URL ingestion: canonical/original URL
-- local-file ingestion: original local file path
-
-Behavior:
-
-- `skip`
-  - completes the job without writing a new artifact
-  - reuses the existing media item reference
-- `replace`
-  - performs a fresh run first
-  - removes the previous catalog entry and previous library directory after the new run succeeds
-
-This keeps the setting meaningful without changing the app away from its local-first file-ownership model.
-
-## Filesystem layout
-
-Each successful ingestion is stored under the configured library root:
+## Diagrama lógico
 
 ```text
-items/<slug>--<short-id>/
+┌─────────────────────────────────────────────────────────────┐
+│ React UI (Vite)                                             │
+│  Overview · Ingest · Library · Jobs · Settings              │
+└───────────────────────────┬─────────────────────────────────┘
+                            │  src/lib/tauri.ts (façade)
+              ┌─────────────┴──────────────┐
+              │                            │
+     isTauriRuntime()               browser / Vercel
+              │                            │
+              ▼                            ▼
+     @tauri-apps invoke              webStore (memória)
+              │                      + demoData
+              ▼
+     Rust commands (main.rs)
+       bootstrap · settings · jobs · library · sql proxy
+              │
+              ▼
+     SQLite (rusqlite) + filesystem library root
+              │
+              ▼
+     pipeline.rs → yt-dlp / ffmpeg subprocesses
 ```
 
-Subdirectories:
+## Camadas
 
-- `source/`
-- `audio/`
-- `thumbnails/`
+| Camada | Responsabilidade | Onde |
+|---|---|---|
+| UI | Páginas, estados de loading/empty/error, toasts | `src/pages`, `src/components` |
+| Façade | Escolhe desktop vs demo web | `src/lib/tauri.ts`, `platform.ts` |
+| Reads tipados (desktop) | Drizzle sqlite-proxy → `execute_sql` | `src/lib/repositories.ts`, `drizzle/*` |
+| Writes / pipeline | Persistência e subprocessos | `src-tauri/src/{db,pipeline,main}.rs` |
+| Demo | Catálogo e jobs fictícios | `src/lib/webStore.ts`, `demoData.ts` |
 
-Additional sidecar:
+## Contratos importantes
 
-- `source-metadata.json`
+- **Bootstrap** devolve paths detectados, raiz da biblioteca, versão e **overwrite policy**.
+- **Ingestão** só avança com checkbox de autorização.
+- **Overwrite**: `skip` reutiliza item reconhecido; `replace` reprocessa e limpa artefato anterior após sucesso (com confirmação na UI).
+- **Demo web** não chama binários reais — jobs completam de forma simulada.
 
-## Drizzle / Studio note
+## Persistência
 
-The frontend reads SQLite through a Tauri-backed Drizzle `sqlite-proxy` bridge.
+- Desktop: SQLite no app data dir (`soniva.sqlite` / path configurado).
+- Biblioteca de mídia: diretório escolhido pelo usuário (`libraryRoot`).
+- Sidecars JSON ao lado dos assets quando o pipeline desktop roda.
+- Web: estado volátil em memória (recarregar a página zera, salvo “Carregar demo”).
 
-Drizzle Studio is a separate developer tool and must be pointed at the live runtime database with `SONIVA_DB_PATH`; the runtime DB is not a repository-root SQLite file.
+## Segurança (modelo de ameaça resumido)
+
+- Sem telemetria / backend cloud no produto desktop.
+- Confirmação explícita de fonte autorizada.
+- `execute_sql` é um proxy confiável apenas porque a webview é local e controlada; não deve ser exposto a uma superfície web autenticada sem hardening.
+- Asset protocol habilitado com scope amplo para preview local — aceitável no desktop do usuário.

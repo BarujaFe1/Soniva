@@ -15,7 +15,7 @@ export type BootstrapResponse = {
   detectedYtDlpPath: string | null;
   detectedFfmpegPath: string | null;
   appVersion: string;
-  overwritePolicy?: string;
+  overwritePolicy: "skip" | "replace" | string;
 };
 
 export type BinaryProbe = {

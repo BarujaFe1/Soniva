@@ -20,6 +20,9 @@ export function JobsPage({ jobs, onRefresh, onPageChange }: { jobs: IngestionJob
     setLoadingId(job.id);
     try {
       setSelected(await getJobDetail(job.id));
+    } catch (error) {
+      setSelected(null);
+      showToast("error", error instanceof Error ? error.message : "Falha ao carregar detalhes do job");
     } finally {
       setLoadingId(null);
     }

@@ -9,6 +9,7 @@ pub struct BootstrapResponse {
     pub detected_yt_dlp_path: Option<String>,
     pub detected_ffmpeg_path: Option<String>,
     pub app_version: String,
+    pub overwrite_policy: String,
 }
 
 #[derive(Debug, Serialize)]
