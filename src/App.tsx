@@ -101,6 +101,17 @@ function AppContent() {
     void fullRefresh();
   }, [fullRefresh]);
 
+  // Demo journey: ?demo=1 auto-loads sample data once the web shell boots.
+  useEffect(() => {
+    if (booting || bootError) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("demo") !== "1") return;
+    if (isDemoLoaded()) return;
+    loadDemoData();
+    showToast("success", "Dados de demonstração carregados (?demo=1)");
+    setPage("overview");
+  }, [booting, bootError, showToast]);
+
   useEffect(() => {
     return subscribeWebStore(() => {
       void fullRefresh();
